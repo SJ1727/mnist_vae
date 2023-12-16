@@ -4,14 +4,14 @@ from torchvision import datasets
 import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 import torch.optim as optim
-from model import VAE
+from model import VAE, VQVAE
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
 writer = SummaryWriter()
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-EPOCHS = 3
+EPOCHS = 10
 TRAINING = True
 BATCH_SIZE = 64
 LEARNING_RATE = 1e-3
@@ -23,7 +23,7 @@ transformations = transforms.Compose(
 )
 dataset = datasets.MNIST("data", True, transformations, download=True)
 dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
-net = VAE()
+net = VQVAE()
 optim = optim.Adam(net.parameters(), LEARNING_RATE)
 criterion = nn.MSELoss()
 step = 0
@@ -33,14 +33,14 @@ for epoch in range(EPOCHS):
         images = images.to(DEVICE)
         
         # Pass through VAE and get reconstructions
-        reconstructions = net.forward(images)
+        reconstructions = net.forward(images)[0]
         
         net.zero_grad()
         
         # Calculate loss and gradients
         loss = criterion(reconstructions, images)
         loss.backward()
-        
+
         # Update Parameters
         optim.step()
         
