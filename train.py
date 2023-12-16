@@ -18,7 +18,6 @@ LEARNING_RATE = 1e-3
 transformations = transforms.Compose(
     (
         transforms.ToTensor(),
-        transforms.Normalize((0.5,), (0.5,)),
     )
 )
 dataset = datasets.MNIST("data", True, transformations, download=True)
